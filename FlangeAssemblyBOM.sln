@@ -5,7 +5,9 @@ VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FlangeAssemblyBOM", "FlangeAssemblyBOM\FlangeAssemblyBOM.fsproj", "{15C924B9-26FE-4DFC-83E5-B3CA17B0D67F}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FlangeAssemblyBOM.Test", "FlangeAssemblyBOM.Test\FlangeAssemblyBOM.Test.fsproj", "{61D9BF68-8F5A-486A-A566-634DD1A57AFE}"
+Project("{6EC3EE1D-3C4E-46DD-8F32-0CC8E7565705}") = "FlangeAssemblyBOM.Test", "FlangeAssemblyBOM.Test\FlangeAssemblyBOM.Test.fsproj", "{61D9BF68-8F5A-486A-A566-634DD1A57AFE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FlangeAssemblyBOM.Scaffold", "FlangeAssemblyBOM.Scaffold\FlangeAssemblyBOM.Scaffold.csproj", "{63085941-8B38-4832-B337-030A0725DCBA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{61D9BF68-8F5A-486A-A566-634DD1A57AFE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{61D9BF68-8F5A-486A-A566-634DD1A57AFE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{61D9BF68-8F5A-486A-A566-634DD1A57AFE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{63085941-8B38-4832-B337-030A0725DCBA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{63085941-8B38-4832-B337-030A0725DCBA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{63085941-8B38-4832-B337-030A0725DCBA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{63085941-8B38-4832-B337-030A0725DCBA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

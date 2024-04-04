@@ -20,56 +20,44 @@ type RouteComponentTest(output : ITestOutputHelper) =
         |> stringify
         |> output.WriteLine
 
-    [<Fact>]
-    member this.``01 - json test``() =
-        let path = Path.Combine(Dir.CommandData,"route.json")
-        let text = File.ReadAllText(path)
-        //output.WriteLine(text)
+    //[<Fact>]
+    //member this.``02 - json add pn test``() =
+    //    let path = Path.Combine(Dir.CommandData,"route.json")
+    //    let text = File.ReadAllText(path)
+    //    //output.WriteLine(text)
 
-        let json = Json.parse text
-        output.WriteLine(Json.print json)
+    //    let json = Json.parse text
+    //    //output.WriteLine(Json.print json)
 
-        //let comp = Json.write<RouteComponent> json
-        //output.WriteLine(stringify comp)
+    //    let newJson = 
+    //        [
+    //            "pn",Json.Number 1.0
+    //            "material", Json.String "PPH"
+    //        ]
+    //        |> JsonAppender.addProps json
 
-    [<Fact>]
-    member this.``02 - json add pn test``() =
-        let path = Path.Combine(Dir.CommandData,"route.json")
-        let text = File.ReadAllText(path)
-        //output.WriteLine(text)
+    //    let outp = Json.print newJson
 
-        let json = Json.parse text
-        //output.WriteLine(Json.print json)
+    //    let opath = Path.Combine(Dir.CommandData, "routePN.json")
+    //    File.WriteAllText(opath, outp)
+    //    output.WriteLine(outp)
+    //    output.WriteLine(opath)
 
-        let newJson = 
-            [
-                "pn",Json.Number 1.0
-                "material", Json.String "PPH"
-            ]
-            |> JsonAppender.addProps json
+    //[<Fact>]
+    //member this.``02 - json capture pn test``() =
+    //    let path = Path.Combine(Dir.CommandData, "routePN.json")
+    //    let text = File.ReadAllText(path)
 
-        let outp = Json.print newJson
+    //    let json = Json.parse text
+    //    let names = ["pn";"material"]
+    //    let newJson = JsonAppender.capture names json
 
-        let opath = Path.Combine(Dir.CommandData, "routePN.json")
-        File.WriteAllText(opath, outp)
-        output.WriteLine(outp)
-        output.WriteLine(opath)
+    //    let outp = Json.print newJson
 
-    [<Fact>]
-    member this.``02 - json capture pn test``() =
-        let path = Path.Combine(Dir.CommandData, "routePN.json")
-        let text = File.ReadAllText(path)
-
-        let json = Json.parse text
-        let names = ["pn";"material"]
-        let newJson = JsonAppender.capture names json
-
-        let outp = Json.print newJson
-
-        let opath = Path.Combine(Dir.CommandData, "routeCaputure.json")
-        File.WriteAllText(opath, outp)
-        output.WriteLine(outp)
-        output.WriteLine(opath)
+    //    let opath = Path.Combine(Dir.CommandData, "routeCaputure.json")
+    //    File.WriteAllText(opath, outp)
+    //    output.WriteLine(outp)
+    //    output.WriteLine(opath)
 
     [<Fact>]
     member this.``03 - toroute test``() =

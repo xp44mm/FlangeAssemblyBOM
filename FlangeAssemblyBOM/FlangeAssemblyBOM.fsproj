@@ -21,14 +21,18 @@
     <Compile Include="Wafer.fs" />
     <Compile Include="JsonAppender.fs" />
     <Compile Include="RouteComponent.fs" />
+    <Compile Include="ValueParser.fs" />
+    <Compile Include="RouteComponentFromJson.fs" />
+    <Compile Include="RouteComponentToJson.fs" />
     <Compile Include="RouteComponentConstructor.fs" />
+    <Compile Include="RouteComponentApp.fs" />
     <Compile Include="Bill.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="8.0.200" />
-    <PackageReference Include="FSharp.Idioms" Version="1.4.16" />
-    <PackageReference Include="UnquotedJson" Version="1.0.19" />
+    <PackageReference Include="FSharp.Idioms" Version="1.4.17" />
+    <PackageReference Include="UnquotedJson" Version="1.0.20" />
   </ItemGroup>
 
 

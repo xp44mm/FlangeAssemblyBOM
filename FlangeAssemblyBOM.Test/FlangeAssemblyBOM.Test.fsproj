@@ -11,27 +11,31 @@
   <ItemGroup>
     <Compile Include="Dir.fs" />
     <Compile Include="DirTest.fs" />
+    <Compile Include="ValueParserTest.fs" />
     <Compile Include="FlangeTest.fs" />
     <Compile Include="RouteComponentTest.fs" />
+    <Compile Include="RouteComponentFromJsonTest.fs" />
+    <Compile Include="FlangeDbContextTest.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FSharp.xUnit" Version="1.2.25" />
+    <PackageReference Include="FSharp.xUnit" Version="1.2.26" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-    <PackageReference Include="UnquotedJson" Version="1.0.19" />
+    <PackageReference Include="UnquotedJson" Version="1.0.20" />
     <PackageReference Include="xunit" Version="2.7.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
-    <PackageReference Include="coverlet.collector" Version="6.0.1">
+    <PackageReference Include="coverlet.collector" Version="6.0.2">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FlangeAssemblyBOM.Scaffold\FlangeAssemblyBOM.Scaffold.csproj" />
     <ProjectReference Include="..\FlangeAssemblyBOM\FlangeAssemblyBOM.fsproj" />
   </ItemGroup>
 

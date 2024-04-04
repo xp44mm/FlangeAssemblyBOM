@@ -11,7 +11,7 @@ type RouteComponentSpecific =
     | ComponentAssembly of title:string * refconfig:string * children:RouteComponent list
     | ComponentPart of title:string * refconfig:string
 
-    | Pipe  of length:float * dn:float * pn:float * material:string
+    | Pipe of length:float * dn:float * pn:float * material:string
     | Elbow of angle:float * dn:float * pn:float * material:string
     | Tee of dn:float * pn:float * material:string
     | Flange of dn:float * pn:float * material:string
@@ -19,20 +19,22 @@ type RouteComponentSpecific =
     | EccentricReducer of dn1:float * dn2:float * pn:float * material:string
     | ReducingTee      of dn1:float * dn2:float * pn:float * material:string
 
-    | BallValve           of dn:float * pn:float * material:string
     | WaferButterflyValve of dn:float * pn:float * material:string
     | WaferCheckValve     of dn:float * pn:float * material:string
+
+    | BallValve           of dn:float * pn:float * material:string
     | Expansion           of dn:float * pn:float * material:string
     | Flowmeter           of dn:float * pn:float * material:string
     | MagneticFilter      of dn:float * pn:float * material:string
+
+    | WaferButterflyValveFlanges of children:RouteComponent list
+    | WaferButterflyValveSolo    of children:RouteComponent list
+    | WaferCheckValveFlanges     of children:RouteComponent list
 
     | SingleFlange               of children:RouteComponent list
     | Flanges                    of children:RouteComponent list
     | BallValveFlanges           of children:RouteComponent list
     | BallValveSolo              of children:RouteComponent list
-    | WaferButterflyValveFlanges of children:RouteComponent list
-    | WaferButterflyValveSolo    of children:RouteComponent list
-    | WaferCheckValveFlanges     of children:RouteComponent list
     | ExpansionFlanges           of children:RouteComponent list
     | ExpansionSolo              of children:RouteComponent list
     | FlowmeterFlanges           of children:RouteComponent list
