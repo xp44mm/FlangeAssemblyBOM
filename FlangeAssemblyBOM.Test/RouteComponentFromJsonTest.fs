@@ -57,7 +57,7 @@ type RouteComponentFromJsonTest(output: ITestOutputHelper) =
         output.WriteLine(path)
 
     [<Fact>]
-    member this.``03 - to json test``() =
+    member this.``03 - fasteners test``() =
         let text = 
             let path = Path.Combine(Dir.CommandData,"component archive.json")
             File.ReadAllText(path)
@@ -67,11 +67,11 @@ type RouteComponentFromJsonTest(output: ITestOutputHelper) =
             |> Json.parse
             |> JsonAppender.capture
             |> RouteComponentFromJson.toroute
-            |> RouteComponentFromJson.fasteners
+            |> RouteComponentFasteners.appendFasteners
             
         let json = RouteComponentToJson.from comp
         let outp = Json.print json
-        let path = Path.Combine(Dir.CommandData,"RouteComponentToJson.json")
+        let path = Path.Combine(Dir.CommandData,"fasteners.json")
 
         File.WriteAllText(path,outp,Encoding.UTF8)
         output.WriteLine(path)

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace FlangeAssemblyBOM.Scaffold.Models;
 
 [PrimaryKey("PN", "DN")]
-public partial class flange
+public partial class Flange
 {
     [Key]
     public double PN { get; set; }

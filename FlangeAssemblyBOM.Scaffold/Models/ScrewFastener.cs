@@ -6,11 +6,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlangeAssemblyBOM.Scaffold.Models;
 
-[Table("wafer check")]
-public partial class wafer_check
+public partial class ScrewFastener
 {
     [Key]
-    public double DN { get; set; }
+    public double M { get; set; }
 
-    public double Length { get; set; }
+    public double t { get; set; }
+
+    public double z { get; set; }
+
+    public double p { get; set; }
 }

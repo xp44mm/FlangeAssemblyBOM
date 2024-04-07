@@ -11,19 +11,19 @@ public partial class FlangeDbContext : DbContext
 {
     public FlangeDbContext()
     {
-        var path = Path.Combine(Environment.CurrentDirectory, "app.config");
+        //使用配置文件的代码
+        //var path = Path.Combine(Environment.CurrentDirectory, "app.config");
         //var text = File.ReadAllText(path);
         //var json = Json.parse.Invoke(text);
         //var connectionString = json["connectionString"].stringText;
-        this.ConnectionString = "Data Source=D:/Application Data/flange.db";
-
+        this.ConnectionString = "Data Source=D:/Application Data/flange.db;Mode=ReadOnly;Cache=Private"; //
     }
+
     public string ConnectionString { get; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        base.OnConfiguring(optionsBuilder);
-        if (optionsBuilder != null) {
+        if (!optionsBuilder.IsConfigured) {
             optionsBuilder.UseSqlite(this.ConnectionString);
         }
     }

@@ -9,6 +9,8 @@ open System.IO
 
 open UnquotedJson
 
+let fields = [ "dn";"pn";"material";"fasteners"]
+
 ///属性值下沉
 let capture (json:Json) =
     let rec loop (props:Json) (json:Json) =

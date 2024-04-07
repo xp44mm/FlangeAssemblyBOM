@@ -6,15 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlangeAssemblyBOM.Scaffold.Models;
 
-[Table("screw fastener")]
-public partial class screw_fastener
+public partial class WaferCheckValve
 {
     [Key]
-    public double M { get; set; }
+    public double DN { get; set; }
 
-    public double t { get; set; }
-
-    public double z { get; set; }
-
-    public double p { get; set; }
+    public double Length { get; set; }
 }

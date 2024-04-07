@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlangeAssemblyBOM.Scaffold.Models;
 
-public partial class washer
+public partial class Washer
 {
     [Key]
     public double M { get; set; }

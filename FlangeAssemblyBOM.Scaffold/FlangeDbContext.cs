@@ -12,15 +12,15 @@ public partial class FlangeDbContext : DbContext
     {
     }
 
-    public virtual DbSet<flange> flange { get; set; }
+    public virtual DbSet<Flange> Flange { get; set; }
 
-    public virtual DbSet<screw_fastener> screw_fastener { get; set; }
+    public virtual DbSet<ScrewFastener> ScrewFastener { get; set; }
 
-    public virtual DbSet<wafer_butterfly> wafer_butterfly { get; set; }
+    public virtual DbSet<WaferButterflyValve> WaferButterflyValve { get; set; }
 
-    public virtual DbSet<wafer_check> wafer_check { get; set; }
+    public virtual DbSet<WaferCheckValve> WaferCheckValve { get; set; }
 
-    public virtual DbSet<washer> washer { get; set; }
+    public virtual DbSet<Washer> Washer { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

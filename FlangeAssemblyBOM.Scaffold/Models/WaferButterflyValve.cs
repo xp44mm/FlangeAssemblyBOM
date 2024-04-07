@@ -6,8 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FlangeAssemblyBOM.Scaffold.Models;
 
-[Table("wafer butterfly")]
-public partial class wafer_butterfly
+public partial class WaferButterflyValve
 {
     [Key]
     public double DN { get; set; }

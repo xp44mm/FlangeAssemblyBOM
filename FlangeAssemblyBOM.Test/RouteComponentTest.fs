@@ -59,76 +59,76 @@ type RouteComponentTest(output : ITestOutputHelper) =
     //    output.WriteLine(outp)
     //    output.WriteLine(opath)
 
-    [<Fact>]
-    member this.``03 - toroute test``() =
-        let path = Path.Combine(Dir.CommandData, "routeCaputure.json")
-        let text = File.ReadAllText(path)
+    //[<Fact>]
+    //member this.``03 - toroute test``() =
+    //    let path = Path.Combine(Dir.CommandData, "routeCaputure.json")
+    //    let text = File.ReadAllText(path)
 
-        let json = Json.parse text
+    //    let json = Json.parse text
 
-        let outp = RouteComponentConstructor.toroute json |> stringify
+    //    let outp = RouteComponentConstructor.toroute json |> stringify
 
-        let opath = Path.Combine(Dir.CommandData, "RouteComponent.txt")
-        File.WriteAllText(opath, outp)
-        output.WriteLine(outp)
-        output.WriteLine(opath)
+    //    let opath = Path.Combine(Dir.CommandData, "RouteComponent.txt")
+    //    File.WriteAllText(opath, outp)
+    //    output.WriteLine(outp)
+    //    output.WriteLine(opath)
 
-    [<Fact>]
-    member this.``04 - tolines test``() =
-        let path = Path.Combine(Dir.CommandData, "routeCaputure.json")
-        let text = File.ReadAllText(path)
+    //[<Fact>]
+    //member this.``04 - tolines test``() =
+    //    let path = Path.Combine(Dir.CommandData, "routeCaputure.json")
+    //    let text = File.ReadAllText(path)
 
-        let json = Json.parse text
+    //    let json = Json.parse text
 
-        let outp = 
-            json
-            |> RouteComponentConstructor.toroute  
-            |> RouteComponentConstructor.tolines 0
-            |> String.concat "\n"
+    //    let outp = 
+    //        json
+    //        |> RouteComponentConstructor.toroute  
+    //        |> RouteComponentConstructor.tolines 0
+    //        |> String.concat "\n"
 
-        let opath = Path.Combine(Dir.CommandData, "RouteComponent tolines.txt")
-        File.WriteAllText(opath, outp)
-        //output.WriteLine(outp)
-        output.WriteLine(opath)
+    //    let opath = Path.Combine(Dir.CommandData, "RouteComponent tolines.txt")
+    //    File.WriteAllText(opath, outp)
+    //    //output.WriteLine(outp)
+    //    output.WriteLine(opath)
 
-    [<Fact>]
-    member this.``05 - bom test``() =
-        let comps =
-            let path = Path.Combine(Dir.CommandData, "routeCaputure.json")
-            let text = File.ReadAllText(path)
-            let json = Json.parse text
-            json
-            |> RouteComponentConstructor.toroute  
-            |> RouteComponentConstructor.bom
+    //[<Fact>]
+    //member this.``05 - bom test``() =
+    //    let comps =
+    //        let path = Path.Combine(Dir.CommandData, "routeCaputure.json")
+    //        let text = File.ReadAllText(path)
+    //        let json = Json.parse text
+    //        json
+    //        |> RouteComponentConstructor.toroute  
+    //        |> RouteComponentConstructor.bom
 
-        let outp = 
-            comps
-            |> List.map (RouteComponentConstructor.toLine)
-            |> String.concat "\n"
+    //    let outp = 
+    //        comps
+    //        |> List.map (RouteComponentConstructor.toLine)
+    //        |> String.concat "\n"
 
-        let path = Path.Combine(Dir.CommandData, "RouteComponent bom.txt")
-        File.WriteAllText(path, outp,Encoding.UTF8)
-        output.WriteLine(path)
+    //    let path = Path.Combine(Dir.CommandData, "RouteComponent bom.txt")
+    //    File.WriteAllText(path, outp,Encoding.UTF8)
+    //    output.WriteLine(path)
 
-    [<Fact>]
-    member this.``06 - aggregate test``() =
-        let comps =
-            let path = Path.Combine(Dir.CommandData, "routeCaputure.json")
-            let text = File.ReadAllText(path)
-            let json = Json.parse text
-            json
-            |> RouteComponentConstructor.toroute  
-            |> RouteComponentConstructor.bom
+    //[<Fact>]
+    //member this.``06 - aggregate test``() =
+    //    let comps =
+    //        let path = Path.Combine(Dir.CommandData, "routeCaputure.json")
+    //        let text = File.ReadAllText(path)
+    //        let json = Json.parse text
+    //        json
+    //        |> RouteComponentConstructor.toroute  
+    //        |> RouteComponentConstructor.bom
 
-        let outp = 
-            comps
-            |> Bill.aggregate
-            |> List.map (fun (sp,count) -> $"{sp.toLine()},{count}")
-            |> String.concat "\n"
+    //    let outp = 
+    //        comps
+    //        |> Bill.aggregate
+    //        |> List.map (fun (sp,count) -> $"{sp.toLine()},{count}")
+    //        |> String.concat "\n"
 
-        let path = Path.Combine(Dir.CommandData, "RouteComponent aggregate.txt")
-        File.WriteAllText(path, outp,Encoding.UTF8)
-        output.WriteLine(path)
+    //    let path = Path.Combine(Dir.CommandData, "RouteComponent aggregate.txt")
+    //    File.WriteAllText(path, outp,Encoding.UTF8)
+    //    output.WriteLine(path)
 
 
 

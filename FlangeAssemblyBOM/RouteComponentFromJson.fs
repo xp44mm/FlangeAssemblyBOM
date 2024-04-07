@@ -11,6 +11,7 @@ open System.Diagnostics
 open System.IO
 open System.Text.RegularExpressions
 
+open FlangeAssemblyBOM.Scaffold
 
 open FSharp.Idioms
 open FSharp.Idioms.Literal
@@ -23,57 +24,21 @@ open FSharp.Idioms.OrdinalIgnoreCase
 
 open ValueParser
 
-let getFlangedFasteners (flange:RouteComponentSpecific) =
-    let dn,pn =
-        match flange with
-        | Flange(dn,pn,material) -> dn,pn
-        | _ -> failwith "never"
-
-    [
-        //flange
-        Gasket(dn,pn,1)
-        Nut(0,0)
-        Bolt(0,0,0)
-    ]
-    |> List.map(fun specific -> { refid = ""; specific = specific })
-
-let getWaferFasteners (wafer:RouteComponentSpecific) =
-    let dn,pn,len =
-        match wafer with
-        | WaferButterflyValve (dn,pn,material)
-        | WaferCheckValve (dn,pn,material) 
-            -> dn,pn,0.0
-        | _ -> failwith "never"
-
-    [
-        Gasket(dn,pn,2)
-        Nut(0,0)
-        Washer(0,0)
-        StudBolt(0,0,0)
-    ]
-    |> List.map(fun specific -> { refid = ""; specific = specific })
-
-let getPN (props:Json) =
-    if props.hasProperty "pn" then
-        props.["pn"].floatValue
-    else 1.0
-
-let getMaterial (props:Json) = 
-    if props.hasProperty "material" then
-        props.["material"].stringText
-    else ""
-    
+/// 对夹阀门装配体带一套对夹法兰紧固件。无论两片法兰，还是一片法兰。
+/// 法兰阀门装配体，有几片配对法兰就带几套紧固件。
 let toroute (node: Json) =
-    let rec loop (data: Json) =
+    let rec loop (parentisroute:bool) (data: Json) =
         let title = data.["title"].stringText
         let refconfig = data.["refconfig"].stringText
         let refid     = data.["refid"].stringText
         let isVirtual = data.["isVirtual"] = Json.True
         let props     = data.["props"]
+        let withFasteners () =
+            props.hasProperty "fasteners" && props.["fasteners"].boolValue = false
 
-        let loopChildren (children:Json) = 
+        let loopChildren parentisroute (children:Json) =
             children.elements
-            |> List.map(fun child -> loop child)
+            |> List.map(fun child -> loop parentisroute child)
         
         match title with
         | IgnoreCase "elbow LR.SLDPRT" ->
@@ -99,18 +64,36 @@ let toroute (node: Json) =
             let dn = parseDN refconfig
             let pn = getPN props
             let material = getMaterial props
-            {
-                refid = refid
-                specific = Flange(dn,pn,material)
-            }
+            let fl =
+                {
+                    refid = refid
+                    specific = Flange(dn,pn,material)
+                }
 
+            // routeassy直接单法兰默认转化为singleflange
+            // fasteners:false 单法兰零件
+            if parentisroute && 
+                props.hasProperty "fasteners" && 
+                props.["fasteners"].boolValue = false then
+                {
+                    refid = refid
+                    specific = SingleFlange([fl])
+                }
+            else fl
+            
         | IgnoreCase "flange with fasteners.SLDPRT" ->
             let dn = parseDN refconfig
             let pn = getPN props
             let material = getMaterial props
+            let fl =
+                {
+                    refid = refid
+                    specific = Flange(dn,pn,material)
+                }
+
             {
                 refid = refid
-                specific = SingleFlange([{refid = refid;specific = Flange(dn,pn,material)}])
+                specific = SingleFlange([fl])
             }
 
         | IgnoreCase "reducer.SLDPRT" ->
@@ -208,67 +191,77 @@ let toroute (node: Json) =
         | IgnoreCase "single flanged joint.SLDASM" ->
             {
                 refid = refid
-                specific = SingleFlange(loopChildren data.["Assembly"])
+                specific = SingleFlange(loopChildren false data.["Assembly"])
             }
 
         | IgnoreCase "flanges.SLDASM" ->
             {
                 refid = refid
-                specific = Flanges(loopChildren data.["Assembly"])
+                specific = Flanges(loopChildren false data.["Assembly"])
             }
         | IgnoreCase "ball valve flanges.SLDASM" ->
             {
                 refid = refid
-                specific = BallValveFlanges(loopChildren data.["Assembly"])
+                specific = BallValveFlanges(loopChildren false data.["Assembly"])
             }
         | IgnoreCase "ball valve solo.SLDASM" ->
             {
                 refid = refid
-                specific = BallValveSolo(loopChildren data.["Assembly"])
+                specific = BallValveSolo(loopChildren false data.["Assembly"])
             }
         | IgnoreCase "wafer butterfly valve flanges.SLDASM" ->
             {
                 refid = refid
-                specific = WaferButterflyValveFlanges(loopChildren data.["Assembly"])
+                specific = WaferButterflyValveFlanges(loopChildren false data.["Assembly"])
             }
 
         | IgnoreCase "wafer butterfly valve solo.SLDASM" ->
             {
                 refid = refid
-                specific = WaferButterflyValveSolo(loopChildren data.["Assembly"])
+                specific = WaferButterflyValveSolo(loopChildren false data.["Assembly"])
             }
 
         | IgnoreCase "wafer check valve flanges.SLDASM" ->
             {
                 refid = refid
-                specific = WaferCheckValveFlanges(loopChildren data.["Assembly"])
+                specific = WaferCheckValveFlanges(loopChildren false data.["Assembly"])
             }
 
         | IgnoreCase "expansion joint flanges.SLDASM" ->
             {
                 refid = refid
-                specific = ExpansionFlanges(loopChildren data.["Assembly"])
+                specific = ExpansionFlanges(loopChildren false data.["Assembly"])
             }
 
         | IgnoreCase "expansion joint solo.SLDASM" ->
             {
                 refid = refid
-                specific = ExpansionSolo(loopChildren data.["Assembly"])
+                specific = ExpansionSolo(loopChildren false data.["Assembly"])
             }
 
         | IgnoreCase "flowmeter flanges.SLDASM" ->
             {
                 refid = refid
-                specific = FlowmeterFlanges(loopChildren data.["Assembly"])
+                specific = FlowmeterFlanges(loopChildren false data.["Assembly"])
             }
 
         | IgnoreCase "magnetic filter flanges.SLDASM" ->
             {
                 refid = refid
-                specific = MagneticFilterFlanges(loopChildren data.["Assembly"])
+                specific = MagneticFilterFlanges(loopChildren false data.["Assembly"])
             }
         | _ ->
-            if data.hasProperty "Part" then
+            if data.hasProperty "Assembly" then
+                {
+                    refid = refid
+                    specific = ComponentAssembly(title,refconfig, loopChildren false data.["Assembly"])
+                }
+            elif data.hasProperty "RouteAssembly" then
+                {
+                    refid = refid
+                    specific = RouteAssembly(title, loopChildren true data.["RouteAssembly"])
+                }
+            elif data.hasProperty "Part" then // todo: 考虑删除Part:[]输出
                 if isCompTypeOf "Pipe" props then
                     let dn =
                         props.["Pipe Identifier"].stringText
@@ -297,154 +290,6 @@ let toroute (node: Json) =
                         refid = refid
                         specific = ComponentPart(title,refconfig)
                     }
-            elif data.hasProperty "Assembly" then
-                {
-                    refid = refid
-                    specific = ComponentAssembly(title,refconfig, loopChildren data.["Assembly"])
-                }
-            elif data.hasProperty "RouteAssembly" then
-                {
-                    refid = refid
-                    specific = RouteAssembly(title, loopChildren data.["RouteAssembly"])
-                }
             else failwith "never"
-
-    loop node
-
-let rec fasteners (rc:RouteComponent) =
-    match rc.specific with
-    | RouteAssembly (title:string, children:RouteComponent list) ->
-        {
-            refid = rc.refid
-            specific = RouteAssembly (title, children |> List.map fasteners)
-        }
-    | ComponentAssembly (title:string, refconfig:string, children:RouteComponent list) ->
-        {
-            refid = rc.refid
-            specific = ComponentAssembly (title, refconfig, children |> List.map fasteners)
-        }
-    | SingleFlange (children:RouteComponent list) ->
-        let children = [
-            yield! children
-            yield! getFlangedFasteners children.[0].specific
-        ]
-        {
-            refid = rc.refid
-            specific = SingleFlange children
-        }
-
-    | Flanges (children:RouteComponent list) ->
-        let children = [
-            yield! children
-            yield! getFlangedFasteners children.[0].specific
-        ]
-        {
-            refid = rc.refid
-            specific = Flanges children
-        }
-
-    | BallValveFlanges (children:RouteComponent list) ->
-        let x = getFlangedFasteners children.[1].specific
-        let children = [
-            yield! children
-            yield! x
-            yield! x
-        ]
-        {
-            refid = rc.refid
-            specific = BallValveFlanges children
-        }
-
-    | BallValveSolo (children:RouteComponent list) ->
-        let children = [
-            yield! children
-            yield! getFlangedFasteners children.[1].specific
-        ]
-        {
-            refid = rc.refid
-            specific = BallValveSolo children
-        }
-
-    | WaferButterflyValveFlanges (children:RouteComponent list) ->
-        let x = getFlangedFasteners children.[1].specific
-        let children = [
-            yield! children
-            yield! x
-            yield! x
-        ]
-        {
-            refid = rc.refid
-            specific = WaferButterflyValveFlanges children
-        }
-
-    | WaferButterflyValveSolo (children:RouteComponent list) ->
-        let children = [
-            yield! children
-            yield! getFlangedFasteners children.[1].specific
-        ]
-        {
-            refid = rc.refid
-            specific = WaferButterflyValveSolo children
-        }
-
-    | WaferCheckValveFlanges (children:RouteComponent list) ->
-        let x = getFlangedFasteners children.[1].specific
-        let children = [
-            yield! children
-            yield! x
-            yield! x
-        ]
-        {
-            refid = rc.refid
-            specific = WaferCheckValveFlanges (children)
-        }
-
-    | ExpansionFlanges (children:RouteComponent list) ->
-        let x = getFlangedFasteners children.[1].specific
-        let children = [
-            yield! children
-            yield! x
-            yield! x
-        ]
-        {
-            refid = rc.refid
-            specific = ExpansionFlanges (children)
-        }
-
-    | ExpansionSolo (children:RouteComponent list) ->
-        let children = [
-            yield! children
-            yield! getFlangedFasteners children.[1].specific
-        ]
-        {
-            refid = rc.refid
-            specific = ExpansionSolo (children)
-        }
-
-    | FlowmeterFlanges (children:RouteComponent list) ->
-        let x = getFlangedFasteners children.[1].specific
-        let children = [
-            yield! children
-            yield! x
-            yield! x
-        ]
-        {
-            refid = rc.refid
-            specific = FlowmeterFlanges (children)
-        }
-
-    | MagneticFilterFlanges (children:RouteComponent list) ->
-        let x = getFlangedFasteners children.[1].specific
-        let children = [
-            yield! children
-            yield! x
-            yield! x
-        ]
-
-        {
-            refid = rc.refid
-            specific = MagneticFilterFlanges (children)
-        }
-
-    | _ -> rc
+    loop false node
 

@@ -20,6 +20,7 @@ let parseDNxDN config =
     let gs = Regex.Match(config,"^DN (\d+) x (\d+)$").Groups
     Double.Parse(gs.[1].Value),Double.Parse(gs.[2].Value)
 
+// pipe length
 let parseLength x =
     Double.Parse(Regex.Match(x,"^(\d+(\.\d+)?)mm$").Groups.[1].Value)
 
@@ -27,3 +28,12 @@ let parseElbow x =
     let gs = Regex.Match(x,"^(\d+(?:\.\d+)?)° DN (\d+)$").Groups
     Double.Parse(gs.[1].Value),Double.Parse(gs.[2].Value)
 
+let getPN (props:Json) =
+    if props.hasProperty "pn" then
+        props.["pn"].floatValue
+    else 1.0
+
+let getMaterial (props:Json) = 
+    if props.hasProperty "material" then
+        props.["material"].stringText
+    else ""

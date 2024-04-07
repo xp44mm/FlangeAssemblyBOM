@@ -1,38 +1,30 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
+    <!--<TargetFramework>netstandard2.0</TargetFramework>-->
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
-    <None Include="database\flange.tsv" />
-    <None Include="database\screw fastener.tsv" />
-    <None Include="database\washer.tsv" />
-    <None Include="database\wafer butterfly.tsv" />
-    <None Include="database\wafer check.tsv" />
-    <Compile Include="Dir.fs" />
-    <Compile Include="FlangeRow.fs" />
-    <Compile Include="ScrewFastener.fs" />
-    <Compile Include="Washer.fs" />
-    <Compile Include="WaferButterflyValve.fs" />
-    <Compile Include="WaferCheckValve.fs" />
-    <Compile Include="FlangePair.fs" />
-    <Compile Include="Wafer.fs" />
+    <Compile Include="Screw.fs" />
     <Compile Include="JsonAppender.fs" />
     <Compile Include="RouteComponent.fs" />
     <Compile Include="ValueParser.fs" />
     <Compile Include="RouteComponentFromJson.fs" />
+    <Compile Include="RouteComponentFasteners.fs" />
     <Compile Include="RouteComponentToJson.fs" />
-    <Compile Include="RouteComponentConstructor.fs" />
-    <Compile Include="RouteComponentApp.fs" />
     <Compile Include="Bill.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="8.0.200" />
-    <PackageReference Include="FSharp.Idioms" Version="1.4.17" />
+    <PackageReference Include="FSharp.Idioms" Version="1.4.18" />
     <PackageReference Include="UnquotedJson" Version="1.0.20" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FlangeAssemblyBOM.Scaffold\FlangeAssemblyBOM.Scaffold.csproj" />
   </ItemGroup>
 
 

@@ -9,13 +9,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="FlangeDbContextTest.fs" />
+    <Compile Include="ScrewTest.fs" />
     <Compile Include="Dir.fs" />
     <Compile Include="DirTest.fs" />
     <Compile Include="ValueParserTest.fs" />
-    <Compile Include="FlangeTest.fs" />
     <Compile Include="RouteComponentTest.fs" />
     <Compile Include="RouteComponentFromJsonTest.fs" />
-    <Compile Include="FlangeDbContextTest.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
