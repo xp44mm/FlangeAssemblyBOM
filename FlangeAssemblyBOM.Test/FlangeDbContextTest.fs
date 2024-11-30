@@ -15,6 +15,7 @@ open UnquotedJson
 open FlangeAssemblyBOM
 
 type FlangeDbContextTest(output: ITestOutputHelper) =
+
     [<Fact>]
     member this.``01 - select Flange test``() =
         use context = new FlangeDbContext()

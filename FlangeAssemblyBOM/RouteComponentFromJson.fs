@@ -24,28 +24,46 @@ open FSharp.Idioms.OrdinalIgnoreCase
 
 open ValueParser
 
+let getName2 (json:Json) = json.["name2"].stringText
+let getTitle (json:Json) = json.["title"].stringText
+let getRefconfig (json:Json) = json.["refconfig"].stringText
+let getRefid (json:Json) = json.["refid"].stringText
+let isVirtual (json:Json) = json.["isVirtual"] = Json.True
+let getProps (json:Json) = json.["props"]
+let getKind (json:Json) = json.["kind"].stringText
+let getChildren (json:Json) = json.["children"].elements
+
+  //"name2": "总装配",
+  //"title": "总装配.SLDASM",
+  //"refconfig": "",
+  //"refid": "",
+  //"isVirtual": false,
+  //"props": {},
+  //"kind": "Assembly",
+  //"children": [
+
+
 /// 对夹阀门装配体带一套对夹法兰紧固件。无论两片法兰，还是一片法兰。
 /// 法兰阀门装配体，有几片配对法兰就带几套紧固件。
 let toroute (node: Json) =
-    let rec loop (parentisroute:bool) (data: Json) =
+    let rec loop (parentisroute:bool) (propsls:list<Json>) (data: Json) =
         let title = data.["title"].stringText
         let refconfig = data.["refconfig"].stringText
         let refid     = data.["refid"].stringText
         let isVirtual = data.["isVirtual"] = Json.True
         let props     = data.["props"]
-        let withFasteners () =
-            props.hasProperty "fasteners" && props.["fasteners"].boolValue = false
 
-        let loopChildren parentisroute (children:Json) =
-            children.elements
-            |> List.map(fun child -> loop parentisroute child)
+        let loopChildren isroute (data:Json) =
+            let propsls = props :: propsls
+            data.["children"].elements
+            |> List.map(fun child -> loop isroute propsls child)
         
         match title with
         | IgnoreCase "elbow LR.SLDPRT" ->
             let angle,dn =
                 parseElbow refconfig
-            let pn = getPN props
-            let material = getMaterial props
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
             {
                 refid = refid
                 specific = Elbow(angle,dn,pn,material)
@@ -53,8 +71,8 @@ let toroute (node: Json) =
 
         | IgnoreCase "straight tee.SLDPRT" ->
             let dn = parseDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
             {
                 refid = refid
                 specific = Tee(dn,pn,material)
@@ -62,46 +80,19 @@ let toroute (node: Json) =
 
         | IgnoreCase "flange.SLDPRT" ->
             let dn = parseDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
-            let fl =
-                {
-                    refid = refid
-                    specific = Flange(dn,pn,material)
-                }
-
-            // routeassy直接单法兰默认转化为singleflange
-            // fasteners:false 单法兰零件
-            if parentisroute && 
-                props.hasProperty "fasteners" && 
-                props.["fasteners"].boolValue = false then
-                {
-                    refid = refid
-                    specific = SingleFlange([fl])
-                }
-            else fl
-            
-        | IgnoreCase "flange with fasteners.SLDPRT" ->
-            let dn = parseDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
-            let fl =
-                {
-                    refid = refid
-                    specific = Flange(dn,pn,material)
-                }
-
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
             {
                 refid = refid
-                specific = SingleFlange([fl])
-            }
+                specific = Flange(dn,pn,material)
+            }            
+        | IgnoreCase "flange with fasteners.SLDPRT" ->
+            failwith "replace <flange with fasteners.SLDPRT> with <sole flange.SLDASM>"
 
         | IgnoreCase "reducer.SLDPRT" ->
-            let dn1,dn2 =
-                parseDNxDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
-
+            let dn1,dn2 = parseDNxDN refconfig
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
             {
                 refid = refid
                 specific = Reducer(dn1,dn2,pn,material)
@@ -110,9 +101,8 @@ let toroute (node: Json) =
         | IgnoreCase "eccentric reducer.SLDPRT" ->
             let dn1,dn2 =
                 parseDNxDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
-
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
             {
                 refid = refid
                 specific = EccentricReducer(dn1,dn2,pn,material)
@@ -121,8 +111,8 @@ let toroute (node: Json) =
         | IgnoreCase "reducing outlet tee.SLDPRT" ->
             let dn1,dn2 =
                 parseDNxDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
 
             {
                 refid = refid
@@ -131,8 +121,8 @@ let toroute (node: Json) =
 
         | IgnoreCase "ball valve.SLDPRT" ->
             let dn = parseDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
             {
                 refid = refid
                 specific = BallValve(dn,pn,material)
@@ -140,8 +130,8 @@ let toroute (node: Json) =
 
         | IgnoreCase "wafer butterfly valve.SLDPRT" ->
             let dn = parseDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
 
             {
                 refid = refid
@@ -150,8 +140,8 @@ let toroute (node: Json) =
 
         | IgnoreCase "wafer check valve.SLDPRT" ->
             let dn = parseDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
 
             {
                 refid = refid
@@ -160,8 +150,8 @@ let toroute (node: Json) =
 
         | IgnoreCase "expansion joint.SLDPRT" ->
             let dn = parseDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
 
             {
                 refid = refid
@@ -170,8 +160,8 @@ let toroute (node: Json) =
 
         | IgnoreCase "flowmeter.SLDPRT" ->
             let dn = parseDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
 
             {
                 refid = refid
@@ -180,8 +170,8 @@ let toroute (node: Json) =
 
         | IgnoreCase "magnetic filter.SLDPRT" ->
             let dn = parseDN refconfig
-            let pn = getPN props
-            let material = getMaterial props
+            let pn = getPN propsls props
+            let material = getMaterial propsls props
 
             {
                 refid = refid
@@ -191,77 +181,78 @@ let toroute (node: Json) =
         | IgnoreCase "single flanged joint.SLDASM" ->
             {
                 refid = refid
-                specific = SingleFlange(loopChildren false data.["Assembly"])
+                specific = SingleFlange(loopChildren false data)
             }
 
         | IgnoreCase "flanges.SLDASM" ->
             {
                 refid = refid
-                specific = Flanges(loopChildren false data.["Assembly"])
+                specific = Flanges(loopChildren false data)
             }
         | IgnoreCase "ball valve flanges.SLDASM" ->
             {
                 refid = refid
-                specific = BallValveFlanges(loopChildren false data.["Assembly"])
+                specific = BallValveFlanges(loopChildren false data)
             }
         | IgnoreCase "ball valve solo.SLDASM" ->
             {
                 refid = refid
-                specific = BallValveSolo(loopChildren false data.["Assembly"])
+                specific = BallValveSolo(loopChildren false data)
             }
         | IgnoreCase "wafer butterfly valve flanges.SLDASM" ->
             {
                 refid = refid
-                specific = WaferButterflyValveFlanges(loopChildren false data.["Assembly"])
+                specific = WaferButterflyValveFlanges(loopChildren false data)
             }
 
         | IgnoreCase "wafer butterfly valve solo.SLDASM" ->
             {
                 refid = refid
-                specific = WaferButterflyValveSolo(loopChildren false data.["Assembly"])
+                specific = WaferButterflyValveSolo(loopChildren false data)
             }
 
         | IgnoreCase "wafer check valve flanges.SLDASM" ->
             {
                 refid = refid
-                specific = WaferCheckValveFlanges(loopChildren false data.["Assembly"])
+                specific = WaferCheckValveFlanges(loopChildren false data)
             }
 
         | IgnoreCase "expansion joint flanges.SLDASM" ->
             {
                 refid = refid
-                specific = ExpansionFlanges(loopChildren false data.["Assembly"])
+                specific = ExpansionFlanges(loopChildren false data)
             }
 
         | IgnoreCase "expansion joint solo.SLDASM" ->
             {
                 refid = refid
-                specific = ExpansionSolo(loopChildren false data.["Assembly"])
+                specific = ExpansionSolo(loopChildren false data)
             }
 
         | IgnoreCase "flowmeter flanges.SLDASM" ->
             {
                 refid = refid
-                specific = FlowmeterFlanges(loopChildren false data.["Assembly"])
+                specific = FlowmeterFlanges(loopChildren false data)
             }
 
         | IgnoreCase "magnetic filter flanges.SLDASM" ->
             {
                 refid = refid
-                specific = MagneticFilterFlanges(loopChildren false data.["Assembly"])
+                specific = MagneticFilterFlanges(loopChildren false data)
             }
         | _ ->
-            if data.hasProperty "Assembly" then
+            match data.["kind"].stringText with
+            | "Assembly" ->
                 {
                     refid = refid
-                    specific = ComponentAssembly(title,refconfig, loopChildren false data.["Assembly"])
+                    specific = ComponentAssembly(title, refconfig, loopChildren false data)
                 }
-            elif data.hasProperty "RouteAssembly" then
+            | "RouteAssembly" ->
                 {
                     refid = refid
-                    specific = RouteAssembly(title, loopChildren true data.["RouteAssembly"])
+                    specific = RouteAssembly(title, loopChildren true data)
                 }
-            elif data.hasProperty "Part" then // todo: 考虑删除Part:[]输出
+            | "Part" | _ ->
                 if isCompTypeOf "Pipe" props then
                     let dn =
                         props.["Pipe Identifier"].stringText
@@ -269,8 +260,8 @@ let toroute (node: Json) =
                     let length =
                         props.["Length"].stringText
                         |> parseLength
-                    let pn = getPN props
-                    let material = getMaterial props
+                    let pn = getPN propsls props
+                    let material = getMaterial propsls props
 
                     {
                         refid = refid
@@ -279,8 +270,8 @@ let toroute (node: Json) =
                 elif isCompTypeOf "Elbow" props then
                     let angle,dn =
                         parseElbow refconfig
-                    let pn = getPN props
-                    let material = getMaterial props
+                    let pn = getPN propsls props
+                    let material = getMaterial propsls props
                     {
                         refid = refid
                         specific = Elbow(angle,dn,pn,material)
@@ -290,6 +281,5 @@ let toroute (node: Json) =
                         refid = refid
                         specific = ComponentPart(title,refconfig)
                     }
-            else failwith "never"
-    loop false node
+    loop false [] node
 

@@ -26,14 +26,17 @@ let parseLength x =
 
 let parseElbow x =
     let gs = Regex.Match(x,"^(\d+(?:\.\d+)?)° DN (\d+)$").Groups
-    Double.Parse(gs.[1].Value),Double.Parse(gs.[2].Value)
+    let angle = Double.Parse(gs.[1].Value)
+    let dn = Double.Parse(gs.[2].Value)
+    angle,dn
 
-let getPN (props:Json) =
-    if props.hasProperty "pn" then
-        props.["pn"].floatValue
-    else 1.0
+let getPN (propsls:list<Json>) (props:Json) =
+    match Json.tryCapture "PN" (props::propsls) with
+    | Some(Json.Number x) -> x
+    | _ -> failwith $"getPN"
+    
+let getMaterial (propsls:list<Json>) (props:Json) = 
+    match Json.tryCapture "material" (props::propsls) with
+    | Some(Json.String x) -> x
+    | _ -> failwith $"getMaterial"
 
-let getMaterial (props:Json) = 
-    if props.hasProperty "material" then
-        props.["material"].stringText
-    else ""

@@ -33,20 +33,19 @@ type ScrewTest(output : ITestOutputHelper) =
 
         let y = Screw.boltLength flange screw
         output.WriteLine($"计算长度大于给定：{y-e}")
-        Assert.True(y>=e)
-        //Should.equal e y
+        Assert.InRange(y,e,y)
 
     [<Fact>]
     member this.``07 - Wafer studLength test``() =
         let pn = 1.0
         let dn = 150.0
         use context = new FlangeDbContext()
-        let flange = 
-            context.Flange.Find(pn,dn)
+        let flange = context.Flange.Find(pn,dn)
         let screw = context.ScrewFastener.Find(flange.M)
         let washer = context.Washer.Find(flange.M)
-        let fn = Screw.studLength flange screw washer
         let waferLength = context.WaferCheckValve.Find(dn).Length
+
+        let fn = Screw.studLength flange screw washer
 
         output.WriteLine(sprintf "%f" waferLength)
 

@@ -12,7 +12,7 @@ type DirTest(output : ITestOutputHelper) =
         |> output.WriteLine
 
     [<Fact>]
-    member this.``01 - first test``() =
+    member _.``01 - first test``() =
         output.WriteLine("testPath:")
         output.WriteLine(Dir.dinfo.FullName)
 

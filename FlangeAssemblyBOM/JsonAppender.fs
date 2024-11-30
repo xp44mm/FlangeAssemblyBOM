@@ -1,5 +1,4 @@
-﻿module FlangeAssemblyBOM.Routing.JsonAppender
-open FlangeAssemblyBOM
+﻿module FlangeAssemblyBOM.JsonAppender
 
 open FSharp.Idioms
 open FSharp.Idioms.Jsons
@@ -9,31 +8,28 @@ open System.IO
 
 open UnquotedJson
 
-let fields = [ "dn";"pn";"material";"fasteners"]
+//let fields = [ "dn";"pn";"material";"fasteners"]
 
 ///属性值下沉
 let capture (json:Json) =
     let rec loop (props:Json) (json:Json) =
-        let newProps = json.["props"].coalesce props
-        let json =
+        let newProps = 
+            if json.hasProperty "props" then
+                json.["props"].coalesce props
+            else props
+
+        let newJson =
             json.assign [
                 "props", newProps
             ]
 
-        let loopAssembly (name:string) =
+        if newJson.hasProperty "children" then
             let children =
-                json.[name].elements
+                newJson.["children"].elements
                 |> List.map (loop newProps)
                 |> Json.Array
-            json.assign [name,children]
-
-        if json.hasProperty "RouteAssembly" then
-            loopAssembly "RouteAssembly"
-        elif json.hasProperty "Assembly" then
-            loopAssembly "Assembly"
-        elif json.hasProperty "Part" then
-            json
-        else failwith "never:RouteAssembly|Assembly|Part"
+            newJson.assign ["children",children]
+        else newJson
 
     loop (Json.Object []) json
 

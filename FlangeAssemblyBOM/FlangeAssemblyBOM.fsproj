@@ -15,11 +15,17 @@
     <Compile Include="RouteComponentFasteners.fs" />
     <Compile Include="RouteComponentToJson.fs" />
     <Compile Include="Bill.fs" />
+    <Compile Include="TankNozzle.fs" />
+    <Compile Include="NozzleAxis.fs" />
+    <Compile Include="TankNozzleRecord.fs" />
+    <Compile Include="Tank.fs" />
+    <Compile Include="Point.fs" />
+    <Compile Include="TextPosition.fs" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Update="FSharp.Core" Version="8.0.200" />
-    <PackageReference Include="FSharp.Idioms" Version="1.4.18" />
+    <PackageReference Include="FSharp.Idioms" Version="1.4.19" />
     <PackageReference Include="UnquotedJson" Version="1.0.20" />
   </ItemGroup>
 

@@ -22,15 +22,24 @@ open System.IO
 open System.Text.RegularExpressions
 open FSharp.Idioms.OrdinalIgnoreCase
 
+/// 分区为法兰，非法兰
+let flangesAndElse (children:RouteComponent list) =
+    children
+    |> List.partition(fun child ->
+        match child.specific with
+        | Flange _ -> true
+        | _ -> false
+    )
+
 //一套对法兰的紧固件，companion flange
 let getFlangedFasteners (flange:RouteComponentSpecific) =
     let dn,pn =
         match flange with
         | Flange(dn,pn,material) -> dn,pn
-        | _ -> failwith "never"
+        | _ -> failwith "Only for case<Flange>."
 
     use context = new FlangeDbContext()
-    let flange = context.Flange.Find(pn,dn) // |> Seq.find(fun fl -> fl.PN = pn && fl.DN = dn )
+    let flange = context.Flange.Find(pn,dn) // 复合主键(Composite Primary Key)注意顺序正确
     let screw = 
         context.ScrewFastener.Find(flange.M)
     let len = Screw.boltLength flange screw
@@ -88,9 +97,11 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | SingleFlange (children:RouteComponent list) ->
+            let fl = children |> flangesAndElse |> fst |> List.head
+
             let children = [
                 yield! children
-                yield! getFlangedFasteners children.[0].specific
+                yield! getFlangedFasteners fl.specific
                 ]
             {
                 refid = rc.refid
@@ -98,9 +109,10 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | Flanges (children:RouteComponent list) ->
+            let fl = children |> flangesAndElse |> fst |> List.head
             let children = [
                 yield! children
-                yield! getFlangedFasteners children.[0].specific
+                yield! getFlangedFasteners fl.specific
                 ]
             {
                 refid = rc.refid
@@ -108,7 +120,9 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | BallValveFlanges (children:RouteComponent list) ->
-            let x = getFlangedFasteners children.[1].specific
+            let fl = children |> flangesAndElse |> fst |> List.head
+
+            let x = getFlangedFasteners fl.specific
             let children = [
                 yield! children
                 yield! x
@@ -120,9 +134,11 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | BallValveSolo (children:RouteComponent list) ->
+            let fl = children |> flangesAndElse |> fst |> List.head
+
             let children = [
                 yield! children
-                yield! getFlangedFasteners children.[1].specific
+                yield! getFlangedFasteners fl.specific
                 ]
             {
                 refid = rc.refid
@@ -130,9 +146,10 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | WaferButterflyValveFlanges (children:RouteComponent list) ->
+            let v = children |> flangesAndElse |> snd |> List.head
             let children = [
                 yield! children
-                yield! getWaferFasteners children.[1].specific
+                yield! getWaferFasteners v.specific
             ]
             {
                 refid = rc.refid
@@ -140,9 +157,10 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | WaferButterflyValveSolo (children:RouteComponent list) ->
+            let v = children |> flangesAndElse |> snd |> List.head
             let children = [
                 yield! children
-                yield! getWaferFasteners children.[1].specific
+                yield! getWaferFasteners v.specific
             ]
             {
                 refid = rc.refid
@@ -150,9 +168,10 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | WaferCheckValveFlanges (children:RouteComponent list) ->
+            let v = children |> flangesAndElse |> snd |> List.head
             let children = [
                 yield! children
-                yield! getWaferFasteners children.[1].specific
+                yield! getWaferFasteners v.specific
             ]
             {
                 refid = rc.refid
@@ -160,7 +179,8 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | ExpansionFlanges (children:RouteComponent list) ->
-            let x = getFlangedFasteners children.[1].specific
+            let fl = children |> flangesAndElse |> fst |> List.head
+            let x = getFlangedFasteners fl.specific
             let children = [
                 yield! children
                 yield! x
@@ -172,9 +192,11 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | ExpansionSolo (children:RouteComponent list) ->
+            let fl = children |> flangesAndElse |> fst |> List.head
+
             let children = [
                 yield! children
-                yield! getFlangedFasteners children.[1].specific
+                yield! getFlangedFasteners fl.specific
             ]
             {
                 refid = rc.refid
@@ -182,7 +204,9 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | FlowmeterFlanges (children:RouteComponent list) ->
-            let x = getFlangedFasteners children.[1].specific
+            let fl = children |> flangesAndElse |> fst |> List.head
+
+            let x = getFlangedFasteners fl.specific
             let children = [
                 yield! children
                 yield! x
@@ -194,7 +218,9 @@ let appendFasteners (rc:RouteComponent) =
             }
 
         | MagneticFilterFlanges (children:RouteComponent list) ->
-            let x = getFlangedFasteners children.[1].specific
+            let fl = children |> flangesAndElse |> fst |> List.head
+
+            let x = getFlangedFasteners fl.specific
             let children = [
                 yield! children
                 yield! x
@@ -206,5 +232,4 @@ let appendFasteners (rc:RouteComponent) =
                 specific = MagneticFilterFlanges (children)
             }
         | _ -> rc
-
     loop rc

@@ -9,13 +9,17 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="FlangeDbContextTest.fs" />
-    <Compile Include="ScrewTest.fs" />
     <Compile Include="Dir.fs" />
     <Compile Include="DirTest.fs" />
+    <Compile Include="FlangeDbContextTest.fs" />
+    <Compile Include="ScrewTest.fs" />
+    <Compile Include="JsonAppenderTest.fs" />
     <Compile Include="ValueParserTest.fs" />
     <Compile Include="RouteComponentTest.fs" />
     <Compile Include="RouteComponentFromJsonTest.fs" />
+    <Compile Include="RouteComponentFastenersTest.fs" />
+    <Compile Include="TankNozzleTest.fs" />
+    <Compile Include="NozzleTest.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -23,8 +27,8 @@
     <PackageReference Include="FSharp.xUnit" Version="1.2.26" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
     <PackageReference Include="UnquotedJson" Version="1.0.20" />
-    <PackageReference Include="xunit" Version="2.7.0" />
-    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.7">
+    <PackageReference Include="xunit" Version="2.7.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.5.8">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>

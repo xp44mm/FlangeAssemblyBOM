@@ -43,21 +43,6 @@ type RouteComponentTest(output : ITestOutputHelper) =
     //    output.WriteLine(outp)
     //    output.WriteLine(opath)
 
-    //[<Fact>]
-    //member this.``02 - json capture pn test``() =
-    //    let path = Path.Combine(Dir.CommandData, "routePN.json")
-    //    let text = File.ReadAllText(path)
-
-    //    let json = Json.parse text
-    //    let names = ["pn";"material"]
-    //    let newJson = JsonAppender.capture names json
-
-    //    let outp = Json.print newJson
-
-    //    let opath = Path.Combine(Dir.CommandData, "routeCaputure.json")
-    //    File.WriteAllText(opath, outp)
-    //    output.WriteLine(outp)
-    //    output.WriteLine(opath)
 
     //[<Fact>]
     //member this.``03 - toroute test``() =
